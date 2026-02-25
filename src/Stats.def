@@ -1,0 +1,14 @@
+DEFINITION MODULE Stats;
+(* Per-language statistics accumulation. *)
+
+PROCEDURE Init;
+PROCEDURE AddFile(lang: ARRAY OF CHAR; bytes: INTEGER; lines: INTEGER);
+PROCEDURE LangCount(): INTEGER;
+PROCEDURE GetLang(i: INTEGER; VAR name: ARRAY OF CHAR;
+                  VAR bytes, files, lines: INTEGER);
+PROCEDURE TotalBytes(): INTEGER;
+PROCEDURE TotalFiles(): INTEGER;
+PROCEDURE TotalLines(): INTEGER;
+PROCEDURE Sort;
+
+END Stats.

@@ -1,0 +1,12 @@
+DEFINITION MODULE Scan;
+(* Recursive directory scanning with ignore/attribute filtering. *)
+
+PROCEDURE ScanDir(root: ARRAY OF CHAR;
+                  noVendored, noGenerated, breakdown: BOOLEAN);
+
+(* Breakdown file list access *)
+PROCEDURE EntryCount(): INTEGER;
+PROCEDURE GetEntryLang(i: INTEGER; VAR lang: ARRAY OF CHAR);
+PROCEDURE GetEntryPath(i: INTEGER; VAR path: ARRAY OF CHAR);
+
+END Scan.

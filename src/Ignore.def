@@ -1,0 +1,9 @@
+DEFINITION MODULE Ignore;
+(* .gitignore pattern loading and matching. *)
+
+PROCEDURE Init;
+PROCEDURE LoadFile(path: ARRAY OF CHAR; baseDir: ARRAY OF CHAR; depth: INTEGER);
+PROCEDURE PopDepth(depth: INTEGER);
+PROCEDURE IsIgnored(relPath: ARRAY OF CHAR; isDir: BOOLEAN): BOOLEAN;
+
+END Ignore.

@@ -1,0 +1,42 @@
+DEFINITION MODULE FOR "C" Sys;
+(* C bindings for m2sys and bridge functions. *)
+
+FROM SYSTEM IMPORT ADDRESS;
+
+(* File I/O *)
+PROCEDURE m2sys_fopen(path: ADDRESS; mode: ADDRESS): INTEGER;
+PROCEDURE m2sys_fclose(handle: INTEGER): INTEGER;
+PROCEDURE m2sys_fread_line(handle: INTEGER; buf: ADDRESS; bufSize: INTEGER): INTEGER;
+PROCEDURE m2sys_fread_bytes(handle: INTEGER; buf: ADDRESS; maxLen: INTEGER): INTEGER;
+PROCEDURE m2sys_fwrite_str(handle: INTEGER; data: ADDRESS): INTEGER;
+
+(* File system queries *)
+PROCEDURE m2sys_file_exists(path: ADDRESS): INTEGER;
+PROCEDURE m2sys_is_dir(path: ADDRESS): INTEGER;
+PROCEDURE m2sys_file_size(path: ADDRESS): INTEGER;
+PROCEDURE m2sys_is_symlink(path: ADDRESS): INTEGER;
+
+(* Directory listing: writes newline-separated entries into buf *)
+PROCEDURE m2sys_list_dir(dir: ADDRESS; buf: ADDRESS; bufSize: INTEGER): INTEGER;
+
+(* Path utilities *)
+PROCEDURE m2sys_join_path(a: ADDRESS; b: ADDRESS; outBuf: ADDRESS; outSize: INTEGER);
+PROCEDURE m2sys_basename(path: ADDRESS; out: ADDRESS; outSize: INTEGER);
+PROCEDURE m2sys_dirname(path: ADDRESS; out: ADDRESS; outSize: INTEGER);
+
+(* String operations *)
+PROCEDURE m2sys_strlen(s: ADDRESS): INTEGER;
+PROCEDURE m2sys_str_eq(a: ADDRESS; b: ADDRESS): INTEGER;
+PROCEDURE m2sys_str_starts_with(s: ADDRESS; prefix: ADDRESS): INTEGER;
+PROCEDURE m2sys_str_append(dst: ADDRESS; dstSize: INTEGER; src: ADDRESS): INTEGER;
+PROCEDURE m2sys_str_contains_ci(haystack: ADDRESS; needle: ADDRESS): INTEGER;
+
+(* Environment *)
+PROCEDURE m2sys_getcwd(out: ADDRESS; outSize: INTEGER);
+PROCEDURE m2sys_getenv(name: ADDRESS; out: ADDRESS; outSize: INTEGER);
+
+(* stderr/stdout writing from bridge.c *)
+PROCEDURE m2_stderr_write(msg: ADDRESS);
+PROCEDURE m2_stdout_write(msg: ADDRESS);
+
+END Sys.

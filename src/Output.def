@@ -1,0 +1,7 @@
+DEFINITION MODULE Output;
+(* Render scan results as text table or JSON. *)
+
+PROCEDURE RenderText(breakdown: BOOLEAN);
+PROCEDURE RenderJson(breakdown: BOOLEAN);
+
+END Output.

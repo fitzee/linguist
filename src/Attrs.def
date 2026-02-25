@@ -1,0 +1,12 @@
+DEFINITION MODULE Attrs;
+(* .gitattributes parsing for linguist overrides. *)
+
+PROCEDURE Init;
+PROCEDURE LoadFile(path: ARRAY OF CHAR);
+PROCEDURE IsVendored(relPath: ARRAY OF CHAR): BOOLEAN;
+PROCEDURE IsGenerated(relPath: ARRAY OF CHAR): BOOLEAN;
+PROCEDURE IsDocumentation(relPath: ARRAY OF CHAR): BOOLEAN;
+PROCEDURE GetLanguageOverride(relPath: ARRAY OF CHAR;
+                              VAR lang: ARRAY OF CHAR): BOOLEAN;
+
+END Attrs.
