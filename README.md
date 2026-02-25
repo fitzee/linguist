@@ -2,7 +2,7 @@
 
 A fast, zero-dependency source code language statistics tool. Single static binary, ~108KB.
 
-Written in Modula-2, compiled via [m2c](https://github.com/mattfitz/m2c).
+Written in Modula-2, compiled via [m2c](https://github.com/fitzee/m2c).
 
 ## Why not github-linguist?
 
