@@ -28,14 +28,14 @@ This project exists because sometimes you just want to run `linguist .` and get 
 | Install | `gem install github-linguist` + deps | Copy one file |
 | Binary size | ~50MB installed | 108KB |
 | Speed | Seconds on large repos | Milliseconds |
-| Language DB | 600+ languages, Bayesian classifier, heuristics | ~90 languages by extension/filename/shebang |
-| Disambiguation | Statistical classifier for ambiguous extensions | First-match (no classifier) |
+| Language DB | 600+ languages, Bayesian classifier, heuristics | 75 languages by extension/filename/shebang/classifier |
+| Disambiguation | Statistical classifier for ambiguous extensions | Bayesian keyword classifier for ambiguous extensions |
 | Git integration | Reads from Git blob objects | Reads the working tree directly |
 | Configuration | Overrides via `.gitattributes` | Same |
 | Vendored detection | Built-in path patterns | Via `.gitattributes` only |
 | Generated detection | Content heuristics + patterns | Via `.gitattributes` only |
 
-The main trade-off: github-linguist has a massive language database and a Bayesian classifier that can distinguish, say, Objective-C `.h` files from C `.h` files by looking at the content. This tool doesn't do that. It maps `.h` to C and moves on. For most codebases this is fine. If you need per-file disambiguation of ambiguous extensions, use the real thing.
+The main trade-off is language coverage: github-linguist knows about 600+ languages with extensive heuristics. This tool covers 75 languages and uses a Bayesian keyword classifier to disambiguate shared extensions (`.h`, `.m`, `.pl`) and classify extensionless files. For most codebases this is more than enough.
 
 ## Install
 
@@ -135,17 +135,35 @@ JSON breakdown adds a `file_list` array to each language entry.
 
 ## How detection works
 
-Detection runs in order. The first match wins.
+Detection runs in order:
 
 1. **`.gitattributes` override** -- if a file matches a pattern with `linguist-language=X`, that language is used unconditionally.
 
-2. **File extension** -- the most common path. Maps `.rs` to Rust, `.py` to Python, etc. Case-insensitive matching.
+2. **File extension** -- the most common path. Maps `.rs` to Rust, `.py` to Python, etc. Case-insensitive matching. If the extension is ambiguous (see below), the classifier refines the result.
 
 3. **Well-known filename** -- files like `Makefile`, `Dockerfile`, `CMakeLists.txt` are recognised by exact name.
 
 4. **Shebang** -- if the file has no recognised extension, the first line is checked for `#!`. Interpreter names like `python3`, `bash`, `node` are mapped to languages.
 
+5. **Content classifier** -- if all of the above fail, a Bayesian keyword classifier scores the file content against 27 profiled languages and picks the best match.
+
 If none of the above match, the file is ignored (not counted).
+
+### Ambiguous extension disambiguation
+
+Some file extensions map to multiple possible languages. When the extension match is ambiguous, the classifier tokenizes the first 8KB of the file and scores it against the candidate languages using discriminating keywords:
+
+| Extension | Candidates |
+|-----------|------------|
+| `.h`      | C, C++, Objective-C |
+| `.m`      | Objective-C, MATLAB |
+| `.pl`     | Perl, Prolog |
+
+For example, a `.h` file containing `namespace`, `template`, and `std::vector` will be classified as C++, while one with `typedef`, `malloc`, and `unsigned` will be classified as C.
+
+### Extensionless file classification
+
+Files with no recognised extension (and no shebang match) are classified against all 27 profiled languages: C, C++, Objective-C, Java, Python, Ruby, JavaScript, TypeScript, Go, Rust, Shell, Perl, Prolog, PHP, Haskell, MATLAB, Swift, Kotlin, Scala, C#, Lua, R, Elixir, Erlang, Dart, OCaml, and SQL.
 
 ## What gets skipped
 
@@ -158,7 +176,7 @@ If none of the above match, the file is ignored (not counted).
 
 ## Supported languages
 
-~90 languages detected by extension. Partial list of the more common ones:
+75 languages detected by extension, filename, shebang, and content classification. Partial list of the more common ones:
 
 Ada, Assembly, Awk, Batch, C, C#, C++, CMake, CSS, Clojure, COBOL, Common Lisp, D, Dart, Diff, Dockerfile, Elixir, Emacs Lisp, Erlang, F#, Fortran, Go, GraphQL, Groovy, HCL, HTML, Haskell, INI, JSON, Java, JavaScript, Julia, Just, Kotlin, Less, Lua, Makefile, Markdown, Modula-2, Nim, Nix, OCaml, Objective-C, Objective-C++, PHP, Pascal, Perl, PowerShell, Protocol Buffers, Python, R, Racket, Ruby, Rust, SCSS, SQL, SVG, Sass, Scala, Scheme, Shell, Swift, Tcl, TeX, TOML, TypeScript, V, Vim Script, Visual Basic, XML, YAML, Zig.
 
@@ -169,6 +187,5 @@ Ada, Assembly, Awk, Batch, C, C#, C++, CMake, CSS, Clojure, COBOL, Common Lisp, 
 - Max 512 `.gitignore` patterns loaded at once
 - Max 128 `.gitattributes` rules loaded at once
 - Paths longer than 1023 characters are truncated
-- No disambiguation of ambiguous extensions (`.h` is always C, never C++ or Objective-C)
-- No content-based classification
+- Content classifier covers 27 languages; files in unlisted languages with ambiguous or missing extensions won't be classified
 - Working tree only -- does not read Git objects or respect `.gitattributes` set via `git config`

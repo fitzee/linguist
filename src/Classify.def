@@ -1,0 +1,19 @@
+DEFINITION MODULE Classify;
+(* Bayesian content classifier for language disambiguation.
+
+   Uses keyword frequency scoring against profiled languages
+   to classify file content when extension is ambiguous or missing. *)
+
+FROM SYSTEM IMPORT ADDRESS;
+
+(* Classify file content using Bayesian keyword scoring.
+   ext is a hint -- if ambiguous, narrows candidates.
+   Returns TRUE and fills lang if confident, FALSE otherwise. *)
+PROCEDURE ByContent(buf: ADDRESS; len: CARDINAL;
+                    ext: ARRAY OF CHAR;
+                    VAR lang: ARRAY OF CHAR): BOOLEAN;
+
+(* Returns TRUE if ext is in the ambiguity table. *)
+PROCEDURE IsAmbiguous(ext: ARRAY OF CHAR): BOOLEAN;
+
+END Classify.

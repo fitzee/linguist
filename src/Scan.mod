@@ -1,7 +1,7 @@
 IMPLEMENTATION MODULE Scan;
 
 FROM SYSTEM IMPORT ADR, ADDRESS;
-IMPORT Sys, Util, Path, Text, Detect, Ignore, Attrs, Stats;
+IMPORT Sys, Util, Path, Text, Detect, Classify, Ignore, Attrs, Stats;
 
 CONST
   MaxEntries = 4096;
@@ -85,7 +85,12 @@ BEGIN
     (* Detect by extension *)
     Path.Extension(fullPath, ext);
     IF ext[0] # 0C THEN
-      IF NOT Detect.ByExtension(ext, lang) THEN
+      IF Detect.ByExtension(ext, lang) THEN
+        (* If ambiguous extension, refine via classifier *)
+        IF Classify.IsAmbiguous(ext) AND (headLen > 0) THEN
+          Classify.ByContent(ADR(headBuf), VAL(CARDINAL, headLen), ext, lang);
+        END;
+      ELSE
         lang[0] := 0C;
       END;
     END;
@@ -99,6 +104,12 @@ BEGIN
     (* Try shebang for extensionless or unrecognized *)
     IF (lang[0] = 0C) AND (headLen > 0) THEN
       IF NOT Detect.ByShebang(ADR(headBuf), VAL(CARDINAL, headLen), lang) THEN
+        lang[0] := 0C;
+      END;
+    END;
+    (* Last resort: classify by content against all profiled languages *)
+    IF (lang[0] = 0C) AND (headLen > 0) THEN
+      IF NOT Classify.ByContent(ADR(headBuf), VAL(CARDINAL, headLen), ext, lang) THEN
         lang[0] := 0C;
       END;
     END;

@@ -10,6 +10,8 @@ m2path=path:/Users/mattfitz/dev/m2/libs/m2path
 m2glob=path:/Users/mattfitz/dev/m2/libs/m2glob
 m2text=path:/Users/mattfitz/dev/m2/libs/m2text
 m2fmt=path:/Users/mattfitz/dev/m2/libs/m2fmt
+m2hash=path:/Users/mattfitz/dev/m2/libs/m2hash
+m2tok=path:/Users/mattfitz/dev/m2/libs/m2tok
 
 [cc]
 extra-c=src/bridge.c /Users/mattfitz/dev/m2/libs/m2sys/m2sys.c
