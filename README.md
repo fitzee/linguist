@@ -39,7 +39,16 @@ The main trade-off is language coverage: github-linguist knows about 600+ langua
 
 ## Install
 
-Build from source (requires [m2c](https://github.com/mattfitz/m2c)):
+### Homebrew (macOS arm64)
+
+```
+brew tap fitzee/tap
+brew install linguist
+```
+
+### Build from source
+
+Requires [m2c](https://github.com/fitzee/m2c):
 
 ```
 cd linguist
